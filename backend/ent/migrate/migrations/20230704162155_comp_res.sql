@@ -1,0 +1,4 @@
+-- Modify "competitions" table
+ALTER TABLE "competitions" ADD COLUMN "status" character varying NOT NULL DEFAULT 'pending', ADD COLUMN "group_type" character varying NOT NULL DEFAULT '', ADD COLUMN "official" boolean NOT NULL DEFAULT false;
+-- Create "competition_results" table
+CREATE TABLE "competition_results" ("id" uuid NOT NULL, "created_at" timestamptz NOT NULL, "updated_at" timestamptz NOT NULL, "place" character varying NOT NULL, "competition_result_competition" uuid NOT NULL, "competition_result_profile" uuid NOT NULL, PRIMARY KEY ("id"), CONSTRAINT "competition_results_competitions_competition" FOREIGN KEY ("competition_result_competition") REFERENCES "competitions" ("id") ON DELETE NO ACTION, CONSTRAINT "competition_results_profiles_profile" FOREIGN KEY ("competition_result_profile") REFERENCES "profiles" ("id") ON DELETE NO ACTION);

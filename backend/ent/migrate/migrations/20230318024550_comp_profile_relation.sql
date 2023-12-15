@@ -1,0 +1,2 @@
+-- create "competition_participants" table
+CREATE TABLE "competition_participants" ("competition_id" uuid NOT NULL, "profile_id" uuid NOT NULL, PRIMARY KEY ("competition_id", "profile_id"), CONSTRAINT "competition_participants_competition_id" FOREIGN KEY ("competition_id") REFERENCES "competitions" ("id") ON DELETE CASCADE, CONSTRAINT "competition_participants_profile_id" FOREIGN KEY ("profile_id") REFERENCES "profiles" ("id") ON DELETE CASCADE);

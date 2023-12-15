@@ -1,0 +1,78 @@
+version: '3.9'
+
+volumes:
+  db-data: 
+  redis-data:
+networks:
+  swiftui-golang-app-demo:
+
+
+services:
+ migrate:
+    image: arigaio/atlas:latest
+      # migrate hash  &&  \ use this in the command to rehash
+    command: >
+      migrate apply
+      --url postgres://postgres:postgres@db:5432/postgres?sslmode=disable
+    networks:
+      - swiftui-golang-app-demo
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./ent/migrate/migrations/:/migrations
+
+ api:
+    build:
+      dockerfile: ./docker/api/Dockerfile
+      context: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      # - migrate
+    networks:
+      - swiftui-golang-app-demo
+        
+ db:
+    image: postgres
+    restart: always
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - PGUSER=postgres
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+    networks:
+      - swiftui-golang-app-demo
+
+ redis:
+  image: redis/redis-stack:latest
+  ports:
+    - "6379:6379"
+    - "8001:8001"
+  volumes:
+    - redis-data:/data
+    - ./docker/redis/redis.conf:/redis-stack.conf
+  networks:
+    - swiftui-golang-app-demo
+
+#  rabbitmq:
+#     image: rabbitmq:3.12.0-management
+#     ports:
+#       - "5672:5672"
+#       - "15672:15672"
+#     networks:
+#       - swiftui-golang-app-demo
+

@@ -1,0 +1,2 @@
+-- Modify "competition_results" table
+ALTER TABLE "competition_results" DROP CONSTRAINT "competition_results_profiles_profile", ALTER COLUMN "competition_result_profile" DROP NOT NULL, ADD COLUMN "competition_result_squad" uuid NULL, ADD CONSTRAINT "competition_results_profiles_profile" FOREIGN KEY ("competition_result_profile") REFERENCES "profiles" ("id") ON DELETE SET NULL, ADD CONSTRAINT "competition_results_squads_squad" FOREIGN KEY ("competition_result_squad") REFERENCES "squads" ("id") ON DELETE SET NULL;
